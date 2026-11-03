@@ -1,0 +1,7 @@
+03/09/2018: Added Guy Fawkes Day
+03/10/2018: Added calcDaylightSavingsTime
+01/18/2019: Added Martin Luther King Jr Day
+01/18/2019: Fixed the nurses day calculation to work every year
+05/22/2019: Fixed the EMS week calculation to work every year
+05/26/2019: Fixed the Memorial day and fathers day calculations to work every year. Made code calculate and display Memorial Day date. Added ky derby.
+02/08/2020: Added Super Bowl Sunday
