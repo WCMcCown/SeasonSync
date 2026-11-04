@@ -1,6 +1,8 @@
-config.json
+config.unraid.json
+config.windows.json
 __pycache__/
 *.pyc
 .vscode/
 backgroundmover - Copy.py
 runbackgroundmover.bat
+

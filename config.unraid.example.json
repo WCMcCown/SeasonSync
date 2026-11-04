@@ -1,0 +1,24 @@
+{
+    "background_root": "/mnt/user/Backgrounds/",
+    "events_folder": "Events",
+    "seasons_folder": "Seasons",
+    "current_folder": "Current",
+
+    "birthdays": [
+        {
+            "name": "John",
+            "month": 2,
+            "day": 19
+        },
+        {
+            "name": "Mary",
+            "month": 11,
+            "day": 14
+        },
+        {
+            "name": "Billy",
+            "month": 5,
+            "day": 3
+        }
+    ]
+}

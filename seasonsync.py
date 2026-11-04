@@ -7,11 +7,24 @@
 # began: 02/11/2017
 # last updated: 11/08/2025
 
-import datetime, json, time, os, shutil, smtplib
+import datetime
+import json
+import os
+import platform
+import shutil
+import smtplib
+import time
 from math import ceil
 
-with open('config.json') as f:
+if platform.system() == "Windows":
+    config_file = "config.windows.json"
+else:
+    config_file = "config.unraid.json"
+
+with open(config_file, "r") as f:
     config = json.load(f)
+
+birthdays = config["birthdays"]
 
 BACKGROUND_ROOT = config["background_root"]
 
@@ -31,7 +44,7 @@ destination = os.path.join(
 )
 
 currentDate = time.strftime("%x")   #shows current date in MM/DD/YY form
-#currentDate = ("12/19 /19") #DEBUG
+#currentDate = ("12/11/19") #DEBUG
 currentYear = time.strftime("%y")   #shows current year in YY format
 today = datetime.date.today()
 #today = datetime.date(2019, 2, 11) #DEBUG
@@ -519,12 +532,19 @@ def todaysBackgrounds(currentFiles):    #determines which folder should be curre
     valentinesDay = calcValentinesDay()
 
     newFiles = ""
-    birthday = [ '03/13/' + currentYear,
-                 '12/01/' + currentYear,
-                 '12/04/' + currentYear,
-                 '12/11/' + currentYear,
-                ]
-    if currentDate in birthday: #someones birthday
+
+    isBirthday = False
+
+    for person in birthdays:
+        if (
+            today.month == person["month"]
+            and today.day == person["day"]
+        ):
+            print(f"Today is {person['name']}'s birthday!")
+            isBirthday = True
+            break
+
+    if isBirthday: #someones birthday
         newFiles = 'birthday'
 
         ## HOLIDAYS
@@ -699,6 +719,8 @@ def moveFiles(newFiles):   # move files into 'current' folder if needed
         movingFolder = os.path.join(BACKGROUND_ROOT, "Seasons", "Autumn")
     elif movingFiles == 'winter': #winter
         movingFolder = os.path.join(BACKGROUND_ROOT, "Seasons", "Winter")
+
+    print(destination)
 
     oldFileList = os.listdir(destination)
     numberOldFiles = 0
