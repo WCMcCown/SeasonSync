@@ -140,37 +140,29 @@ def calcEaster():
     return (easter)
 
 def calcEMSWeek():
-    print ("calculating EMS Week...")
+    print("calculating EMS Week...")
+
     EMSWeek = "00/00/00"
     now = datetime.datetime.now()
-    #now = datetime.date(2017, 5, 15) #DEBUG
-    currentMonth = now.month
-    currentDay = now.day
-    currentWeekDay = now.weekday()
-    currentMonday = ""
     currentYear = now.year
-    #print (now)
-    #print (currentYear)
+
+    # EMS Week starts on the Sunday of the week in which May 15 falls
     startLookingDay = datetime.date(currentYear, 5, 15)
 
-    if (currentMonth == 5):
-        #print("It's May")
-        if (currentDay >= 15):
-            EMSWeek = startLookingDay
-            #print ("Day >= 15")
-            while (currentWeekDay != 6):
-                #print ("running while loop")
-                EMSWeek = EMSWeek + datetime.timedelta(days=1)
-                currentWeekDay = EMSWeek.weekday()
-                #EMSWeek = now
-                #print (EMSWeek)
-            d = EMSWeek.day
-            #print(d)
-            EMSWeek = extraDays(5, d, 0,6)
+    while startLookingDay.weekday() != 6:  # Sunday
+        startLookingDay = startLookingDay + datetime.timedelta(days=1)
 
-    print ()
-    #print (EMSWeek)
-    return (EMSWeek)
+    emsWeekStart = startLookingDay
+
+    print("EMS Week Starts:", end=" ")
+    print(emsWeekStart)
+    print()
+
+    # Return currentDate if today falls within EMS Week
+    d = emsWeekStart.day
+    EMSWeek = extraDays(5, d, 0, 6)
+
+    return EMSWeek
 
 def calcFathersDay():
     print ("calculating Fathers Day...")
