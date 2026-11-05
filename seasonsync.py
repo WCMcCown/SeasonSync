@@ -116,28 +116,43 @@ def extraDays(month, day, daysBefore, daysAfter):
 
 
 def calcEaster():
+    print("calculating Easter...")
+
     y = int(time.strftime("%Y"))
+
     # golden year - 1
     g = y % 19
+
     # offset
     e = 0
+
     # century
-    c = y/100
+    c = y / 100
+
     # h is (23 - Epact) mod 30
-    h = (c-c/4-(8*c+13)/25+19*g+15)%30
+    h = (c - c/4 - (8*c+13)/25 + 19*g + 15) % 30
+
     # number of days from March 21 to Paschal Full Moon
-    i = h-(h/28)*(1-(h/28)*(29/(h+1))*((21-g)/11))
+    i = h - (h/28) * (1 - (h/28) * (29/(h+1)) * ((21-g)/11))
+
     # weekday for Paschal Full Moon (0=Sunday)
-    j = (y+y/4+i+2-c+c/4)%7
+    j = (y + y/4 + i + 2 - c + c/4) % 7
+
     # number of days from March 21 to Sunday on or before Paschal Full Moon
-    # p can be from -6 to 28
-    p = i-j+e
-    d = int(1+(p+27+(p+6)/40)%31)
-    m = int(3+(p+26)/30)
-    #print(y, m, d)
-    #easter = datetime.date(y,m,d)
-    easter = extraDays(m, d, 5,1)
-    return (easter)
+    p = i - j + e
+
+    d = int(1 + (p + 27 + (p+6)/40) % 31)
+    m = int(3 + (p+26)/30)
+
+    easterDate = datetime.date(y, m, d)
+
+    print("Easter:", end=" ")
+    print(easterDate)
+    print()
+
+    easter = extraDays(m, d, 5, 1)
+
+    return easter
 
 def calcEMSWeek():
     print("calculating EMS Week...")
