@@ -8,6 +8,7 @@
 # last updated: 11/08/2025
 
 import datetime
+from importlib.resources import files
 import json
 import os
 import platform
@@ -214,33 +215,38 @@ def calcFathersDay():
     return (fathersDay)
 
 def calcMardiGras():
+    print("calculating Mardi Gras...")
+
     y = int(time.strftime("%Y"))
-    # golden year - 1
+
+    # Easter calculation
     g = y % 19
-    # offset
     e = 0
-    # century
-    c = y/100
-    # h is (23 - Epact) mod 30
-    h = (c-c/4-(8*c+13)/25+19*g+15)%30
-    # number of days from March 21 to Paschal Full Moon
-    i = h-(h/28)*(1-(h/28)*(29/(h+1))*((21-g)/11))
-    # weekday for Paschal Full Moon (0=Sunday)
-    j = (y+y/4+i+2-c+c/4)%7
-    # number of days from March 21 to Sunday on or before Paschal Full Moon
-    # p can be from -6 to 28
-    p = i-j+e
-    d = int(1+(p+27+(p+6)/40)%31)
-    m = int(3+(p+26)/30)
-    #print(y, m, d)
-    easter = datetime.date(y,m,d)
-    #easter = datetime.date(d + "/" + m + "/" + y)
-    mardiGras = easter - datetime.timedelta(days=47)
-    d = mardiGras.day
-    m = mardiGras.month
-    #print (m,d)
-    mardiGras = extraDays(m,d,1,5)
-    return (mardiGras)
+    c = y / 100
+
+    h = (c - c/4 - (8*c+13)/25 + 19*g + 15) % 30
+    i = h - (h/28) * (1 - (h/28) * (29/(h+1)) * ((21-g)/11))
+    j = (y + y/4 + i + 2 - c + c/4) % 7
+
+    p = i - j + e
+
+    d = int(1 + (p + 27 + (p+6)/40) % 31)
+    m = int(3 + (p+26)/30)
+
+    easter = datetime.date(y, m, d)
+
+    mardiGrasDate = easter - datetime.timedelta(days=47)
+
+    print("Mardi Gras:", end=" ")
+    print(mardiGrasDate)
+    print()
+
+    d = mardiGrasDate.day
+    m = mardiGrasDate.month
+
+    mardiGras = extraDays(m, d, 1, 5)
+
+    return mardiGras
 
 
 def calcInaugurationDay():
@@ -358,45 +364,40 @@ def calcValentinesDay():
     return valentinesDay
 
 def calcDaylightSavingsTime():
+    print("calculating Daylight Saving Time...")
 
+    currentYear = datetime.datetime.now().year
     dst = []
-    now = datetime.datetime.now()
-    #now = datetime.date(2019, 3, 10) #DEBUG
-    currentMonth = now.month
-    currentDay = now.day
-    currentWeekDay = now.weekday()
 
-    if (currentMonth == 3):
-        #print ("It's March")
-        if ((currentDay >= 8) and (currentDay <= 15)):
-            #print ("It's DST range")
-            d = currentDay
-            #print (d)
-            while (currentWeekDay != 6):
-                #print ("running while loop")
-                now = now + datetime.timedelta(days=1)
-                currentWeekDay = now.weekday()
-                dstday = now
-                #print (day)
-                d = dstday.day
-            dst1 = extraDays(3, d, 1,0)
-            dst.append(dst1)
+    # DST STARTS: Second Sunday in March
+    marchFirst = datetime.date(currentYear, 3, 1)
 
-    if (currentMonth == 11):
-        if ((currentDay >= 1) and (currentDay <= 7)):
-            d = currentDay
-            while (currentWeekDay != 6):
-                #print ("running while loop")
-                now = now + datetime.timedelta(days=1)
-                currentWeekDay = now.weekday()
-                dstday = now
-                #print (day)
-                d = dstday.day
-            dst2 = extraDays(11, d, 1,0)
-            dst.append(dst2)
+    while marchFirst.weekday() != 6:  # Sunday
+        marchFirst += datetime.timedelta(days=1)
 
+    dstStart = marchFirst + datetime.timedelta(days=7)
 
-    #print (dst)
+    print("DST Starts:", dstStart)
+
+    d = dstStart.day
+    dst1 = extraDays(3, d, 1, 0)
+    dst.append(dst1)
+
+    # DST ENDS: First Sunday in November
+    novemberFirst = datetime.date(currentYear, 11, 1)
+
+    while novemberFirst.weekday() != 6:  # Sunday
+        novemberFirst += datetime.timedelta(days=1)
+
+    dstEnd = novemberFirst
+
+    print("DST Ends:", dstEnd)
+    print()
+
+    d = dstEnd.day
+    dst2 = extraDays(11, d, 1, 0)
+    dst.append(dst2)
+
     return dst
 
 def calcIndependanceDay():
@@ -497,25 +498,32 @@ def calcThanksgiving():
     
     return (thanksgivingDay)
 
-def currentGet():   #find which backgrounds are in current folder
+def currentGet():
+    """Find which backgrounds are currently active"""
 
-    f=("%scurrent.txt" % destination)
-    currentFile = 'current.txt'
-    currentInfo = ("")
-    currentFolder = 'none'
+    currentFile = os.path.join(
+        destination,
+        "current.txt"
+    )
 
-    if os.path.exists(f): # if the text file is there
+    currentFolder = "none"
+
+    if os.path.exists(currentFile):
+
         try:
-            f=open(destination + 'current.txt', 'r')    #see if there is a current txt file
-            currentFolder = f.read()
-            f.close
-            currentInfo = ('Current folder contains: %s' % currentFolder)
-        except:
-            currentInfo = ('Current folder file is corrupted')
+            with open(currentFile, "r") as f:
+                currentFolder = f.read().strip()
 
-    else:       # if the text file id not there
-        currentInfo = ('Current folder file not available')
-    print (currentInfo)
+            print(f"Current folder contains: {currentFolder}")
+
+        except Exception as e:
+            print(f"Current folder file is corrupted: {e}")
+
+    else:
+        print("Current folder file not available")
+
+    print()
+
     return currentFolder
 
 def todaysBackgrounds(currentFiles):    #determines which folder should be current
@@ -608,7 +616,7 @@ def todaysBackgrounds(currentFiles):    #determines which folder should be curre
         newFiles = 'patriot day'
     elif currentDate == '10/08/18': #columbus day
         newFiles = 'columbus day'
-    elif currentDate >= '10/01/' + currentYear and currentDate <= '10/31' + currentYear : #halloween
+    elif currentDate >= '10/01/' + currentYear and currentDate <= '10/31/' + currentYear : #halloween
         newFiles = 'halloween'
     elif currentDate == '11/01/' + currentYear: #all saints day
         newFiles = 'all saints day'
@@ -732,19 +740,28 @@ def moveFiles(newFiles):   # move files into 'current' folder if needed
     oldFileList = os.listdir(destination)
     numberOldFiles = 0
     print()
-    print ('Removing the following files:')
+    print ('Removing the following files from ', destination)
     print("-" * 40)
+
     for files in oldFileList:      #delete the old backgrounds
+
         numberOldFiles += 1
         print(files)
+
+        fullPath = os.path.join(destination, files)
+
         try:
-            os.remove(destination + files)
-            shutil.rmtree(destination + files)
-        except OSError:
-            pass
+            if os.path.isfile(fullPath):
+                os.remove(fullPath)
+            elif os.path.isdir(fullPath):
+                shutil.rmtree(fullPath)
+        except OSError as e:
+            print(f"Error deleting {fullPath}: {e}")
 
     try:
-        shutil.rmtree(destination + '/Portrait')
+        shutil.rmtree(
+            os.path.join(destination, "Portrait")
+        )
     except OSError:
         pass
     print ()
@@ -759,8 +776,8 @@ def moveFiles(newFiles):   # move files into 'current' folder if needed
     for files in newFileList:     #move the new backgrounds
         print (files)
         numberNewFiles += 1
-        path = movingFolder + "/" + files
-        dst = destination + "/" + files
+        path = os.path.join(movingFolder, files)
+        dst = os.path.join(destination, files)
         if (files != "Thumbs.db"):
             try :
                 shutil.copy(path, dst)
@@ -771,13 +788,17 @@ def moveFiles(newFiles):   # move files into 'current' folder if needed
     print ('Move completed')
     print ('Good job Mr. McCown')
 
-def writeFile(movingFiles):       # makes new file with current folder
-    currentBackgrounds = movingFiles
-    f=open(destination + 'current.txt', 'w')
-    f.truncate()
-    f.write (currentBackgrounds)
-    f.close
-    print('\n')
+def writeFile(movingFiles):
+
+    currentFile = os.path.join(
+        destination,
+        "current.txt"
+    )
+
+    with open(currentFile, "w") as f:
+        f.write(movingFiles)
+
+    print()
     print("'Current' File updated")
     print()
 
