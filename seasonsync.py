@@ -13,7 +13,6 @@ import json
 import os
 import platform
 import shutil
-import smtplib
 import time
 from math import ceil
 
@@ -250,13 +249,31 @@ def calcMardiGras():
 
 
 def calcInaugurationDay():
-    inaugurationDay = "00/00/00"
-    y = int(time.strftime("%Y"))
-    dayMonth = str(time.strftime("%m/%d/"))
-    if (y - 1789) % 4 == 0 and dayMonth == "01/20/":
-        inaugurationDay = currentDate
+    print("calculating Inauguration Day...")
 
-    return (inaugurationDay)
+    currentYear = datetime.datetime.now().year
+
+    inauguration = "00/00/00"
+
+    if currentYear % 4 == 1:
+
+        inaugurationDate = datetime.date(
+            currentYear,
+            1,
+            20
+        )
+
+        print("Inauguration Day:", inaugurationDate)
+        print()
+
+        inauguration = extraDays(1, 20, 1, 0)
+
+    else:
+
+        print("No Inauguration Day this year")
+        print()
+
+    return inauguration
 
 def calcKentuckyDerby():
     print ("calculating Kentucky Derby...")
